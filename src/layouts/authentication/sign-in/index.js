@@ -46,7 +46,7 @@ import axios from "axios";
 import { endpoints } from "config/constants/api.constants";
 import MDAlert from "components/MDAlert";
 import { Alert } from "@mui/material";
-import Toast from "components/Toast";
+import { ErrorToast } from "components/Toast";
 
 function Basic() {
   const dispatch = useDispatch();
@@ -54,6 +54,10 @@ function Basic() {
   const checkAuthority = useSelector((state) => state.checkAdminReducer);
   const [invalidUser, setInvalidUser] = useState(false);
   const [noData, setnoData] = useState(false);
+  const [errFields, setErrFields] = useState({
+    userName: false,
+    password: false,
+  });
   useEffect(() => {
     dispatch(checkAdminSlice.actions.reset());
     dispatch(userLoginDetailsSlice.actions.reset());
@@ -65,6 +69,10 @@ function Basic() {
         setTimeout(() => {
           setInvalidUser(false);
         }, 6000);
+        setErrFields({
+          userName: true,
+          password: true,
+        });
       } else {
         dispatch(userLoginDetailsSlice.actions.request(loginDetails));
         navigate("/dashboard");
@@ -84,12 +92,28 @@ function Basic() {
       setTimeout(() => {
         setnoData(false);
       }, 6000);
+      let err = {
+        userName: false,
+        password: false,
+      };
+      if (!loginDetails.userName) {
+        err.userName = true;
+      }
+      if (!loginDetails.password) {
+        err.password = true;
+      }
+      setErrFields(err);
     } else {
       dispatch(checkAdminSlice.actions.request(loginDetails));
     }
   };
   const handleOnchage = (e) => {
+    e.preventDefault();
     setLoginDetails({ ...loginDetails, [e.target.name]: e.target.value });
+    setErrFields({
+      ...errFields,
+      [e.target.name]: false,
+    });
   };
 
   const handleSetRememberMe = () => setRememberMe(!rememberMe);
@@ -138,6 +162,7 @@ function Basic() {
                   label="UserName"
                   name="userName"
                   fullWidth
+                  error={errFields.userName}
                   onChange={handleOnchage}
                 />
               </MDBox>
@@ -147,6 +172,7 @@ function Basic() {
                   label="Password"
                   name="password"
                   fullWidth
+                  error={errFields.password}
                   onChange={handleOnchage}
                 />
               </MDBox>
@@ -187,14 +213,14 @@ function Basic() {
         </Card>
       </BasicLayout>
       {invalidUser && (
-        <Toast
+        <ErrorToast
           open={invalidUser}
           setOpen={setInvalidUser}
           message="Please enter valid username and password"
         />
       )}
       {noData && (
-        <Toast open={noData} setOpen={setnoData} message="Please both username and password" />
+        <ErrorToast open={noData} setOpen={setnoData} message="Please both username and password" />
       )}
     </div>
   );

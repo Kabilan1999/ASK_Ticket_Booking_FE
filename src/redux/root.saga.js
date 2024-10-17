@@ -1,11 +1,18 @@
 import { all, call, fork, put, takeEvery } from "redux-saga/effects";
-import axios from "axios";
-import { userLoginDetailsSlice, getAdminDetailsSlice, checkAdminSlice } from "./root.slice";
-import { endpoints } from "config/constants/api.constants";
+import {
+  userLoginDetailsSlice,
+  getAdminDetailsSlice,
+  checkAdminSlice,
+  addAdminSlice,
+} from "./root.slice";
+import config from "../config/config";
+
+const { endpoints } = config.constants.api;
+const { http } = config.utiliy;
 
 function* getAdminDetailsSaga(action) {
   try {
-    const response = yield call(axios.get(`${endpoints.GET_ADMIN}`));
+    const response = yield call(http.get(`${endpoints.GET_ADMIN}`));
     if (response?.status === 200) {
       yield put(getAdminDetailsSlice.actions.response(response));
     } else {
@@ -26,9 +33,7 @@ function* userLoginDetailsSaga(action) {
 
 function* checkAdminSaga(action) {
   try {
-    const response = yield call(axios.post, `${endpoints.CHECK_ADMIN}`, action.payload);
-    console.log("response", response);
-
+    const response = yield call(http.post(`${endpoints.CHECK_ADMIN}`, action.payload));
     if (response?.status === 200) {
       yield put(checkAdminSlice.actions.response(response));
     } else {
@@ -39,10 +44,24 @@ function* checkAdminSaga(action) {
   }
 }
 
+function* addAdminSaga(action) {
+  try {
+    const response = yield call(http.post(`${endpoints.GET_ADMIN}`, action.payload));
+    if (response?.status === 200) {
+      yield put(addAdminSlice.actions.response(response));
+    } else {
+      yield put(addAdminSlice.actions.error(response?.message));
+    }
+  } catch (e) {
+    yield put(addAdminSlice.actions.error(e.message));
+  }
+}
+
 //Allows current fetches of Users
 function* rootWatcher() {
   yield takeEvery(userLoginDetailsSlice.actions.request.type, userLoginDetailsSaga);
   yield takeEvery(checkAdminSlice.actions.request.type, checkAdminSaga);
+  yield takeEvery(addAdminSlice.actions.request.type, addAdminSaga);
 }
 
 export default function* rootSaga() {

@@ -13,7 +13,7 @@ Coded by www.creative-tim.com
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 // react-router-dom components
 import { useLocation, NavLink } from "react-router-dom";
@@ -47,6 +47,8 @@ import {
   setWhiteSidenav,
 } from "context";
 import { useSelector } from "react-redux";
+import { Portal } from "@mui/material";
+import { ErrorToast } from "components/Toast";
 
 function Sidenav({ color, brand, brandName, routes, ...rest }) {
   const LoginDetails = useSelector((e) => e.userLoginDetailsReducer);

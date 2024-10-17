@@ -52,6 +52,8 @@ import { useMaterialUIController, setMiniSidenav, setOpenConfigurator } from "co
 // Images
 import brandWhite from "assets/images/logo-ct.png";
 import brandDark from "assets/images/logo-ct-dark.png";
+import { Portal } from "@mui/material";
+import { ErrorToast } from "components/Toast";
 
 export default function App() {
   const [controller, dispatch] = useMaterialUIController();
@@ -121,7 +123,10 @@ export default function App() {
 
       return null;
     });
-
+  const [httpErrorMessage, setHttpErrorMessage] = useState("");
+  useEffect(() => {
+    window.setHttpErrorMessage = setHttpErrorMessage;
+  }, [httpErrorMessage]);
   const configsButton = (
     <MDBox
       display="flex"
@@ -190,6 +195,15 @@ export default function App() {
         </>
       )}
       {layout === "vr" && <Configurator />}
+      {httpErrorMessage && (
+        <Portal>
+          <ErrorToast
+            open={!!httpErrorMessage}
+            setOpen={setHttpErrorMessage}
+            message={httpErrorMessage}
+          />
+        </Portal>
+      )}
       <Routes>
         {getRoutes(routes)}
         <Route path="/" exact element={<Navigate to="/authentication/sign-in" />} />

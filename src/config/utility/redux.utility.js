@@ -43,7 +43,7 @@ export const getSlice = (name) =>
         state.error = action.payload;
         state.response = {};
         state.reset = false;
-        state.isSuccess = true;
+        state.isSuccess = false;
         state.isError = true;
         state.flag = false;
       },

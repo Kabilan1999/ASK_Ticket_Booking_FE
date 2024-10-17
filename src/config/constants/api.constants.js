@@ -5,5 +5,7 @@ const endpoints = {
   GET_ADMIN: `${url.BASE_URL}admin`,
   CHECK_ADMIN: `${url.BASE_URL}admin/authorise`,
 };
-
-export { endpoints };
+const generic = {
+  API_TIME_OUT: 60000,
+};
+export { endpoints, generic, url };
